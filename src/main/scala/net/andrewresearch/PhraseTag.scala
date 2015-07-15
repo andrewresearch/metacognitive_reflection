@@ -1,8 +1,30 @@
+/*
+ * Copyright 2015 Andrew Gibson
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package net.andrewresearch
 
+import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
+
 /**
- * This object holds all of the phraseTag data as well as filter methods
- * Created by andrew on 3/07/15.
+ * This object holds all of the phraseTag data as well as necessary pattern rules
+ * and filter methods
+ *
+ * Created by Andrew Gibson on 3/07/15.
+ *
  */
 object PhraseTag {
 
@@ -50,7 +72,7 @@ object PhraseTag {
   private val generalPreposition = List("compare", "temporal", "pertains", "manner", "outcome").map(termFilter.apply(_).asInstanceOf[(String, List[String])]._2).reduce(_ ++ _)
   termFilter += "generalPreposition" ->("containsNone", generalPreposition)
 
-  def filter(phraseTag:String,phrase:String):Boolean = {
+  def filter(phraseTag:String,phrase:String) = {
     if(phraseTag.contains("Reflexive")) { // This type has 2 lists - one for the start and a different one for the end
     val filterData = PhraseTag.termFilter.apply(phraseTag).asInstanceOf[(String,(List[String],List[String]))]
       val startList = filterData._2._1
@@ -93,7 +115,7 @@ object PhraseTag {
     if(phraseTags.contains("selfPossessive")) selfCount += 1.0
     if(phraseTags.contains("selfReflexive")) selfCount += 1.0
 
-    if(totalCount>0) (selfCount / totalCount)
+    if(totalCount>0) selfCount / totalCount
     else -1.0
   }
 
@@ -104,7 +126,7 @@ object PhraseTag {
     if(phraseTags.contains("othersPossessive")) othersCount += 1.0
     if(phraseTags.contains("groupReflexive")) othersCount += 1.0
 
-    if(totalCount>0) (othersCount / totalCount)
+    if(totalCount>0) othersCount / totalCount
     else -1.0
   }
 
